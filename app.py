@@ -2,7 +2,23 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import random
 
-st.set_page_config(page_title="Bilangan Bulat Interaktif", layout="centered")
+st.set_page_config(page_title="Bilangan Bulat Interaktif", layout="wide")
+
+# ======================
+# CUSTOM CSS (BACKGROUND)
+# ======================
+st.markdown("""
+<style>
+.stApp {
+    background: linear-gradient(to right, #4facfe, #00f2fe);
+    color: white;
+}
+h1, h2, h3 {
+    color: #ffffff;
+}
+.css-1d391kg {background-color: rgba(0,0,0,0.3);}
+</style>
+""", unsafe_allow_html=True)
 
 # ======================
 # FUNGSI GARIS BILANGAN
@@ -12,132 +28,146 @@ def garis_bilangan(x):
     ax.axhline(0)
 
     for i in range(-10, 11):
-        ax.plot(i, 0, 'o', color='gray')
+        ax.plot(i, 0, 'o', color='white')
 
     ax.plot(x, 0, 'ro')
-    ax.text(x, 0.3, str(x), ha='center')
+    ax.text(x, 0.3, str(x), ha='center', color='white')
 
     ax.set_xlim(-10, 10)
     ax.set_yticks([])
+    ax.set_facecolor('none')
+    fig.patch.set_alpha(0)
     return fig
 
 # ======================
-# SIDEBAR MENU
+# SIDEBAR
 # ======================
 menu = st.sidebar.radio(
-    "Menu",
-    ["Panduan", "Pengantar Materi", "Kalkulator", "Kuis"]
+    "📚 Menu",
+    ["Panduan", "Materi Interaktif", "Kalkulator", "Kuis TP"]
 )
 
 # ======================
 # 1. PANDUAN
 # ======================
 if menu == "Panduan":
-    st.title("📘 Panduan Penggunaan")
+    st.title("📘 Panduan")
 
     st.markdown("""
-    ### Cara menggunakan:
-    1. Baca pengantar materi terlebih dahulu
-    2. Gunakan kalkulator untuk eksplorasi
-    3. Kerjakan kuis untuk evaluasi
+    ### Cara Belajar:
+    1. Pelajari konsep di Materi Interaktif
+    2. Gunakan Kalkulator untuk eksplorasi
+    3. Kerjakan Kuis untuk evaluasi
     
-    ### Tujuan:
-    Memahami bilangan bulat secara konsep dan penerapan
+    🎯 Target:
+    Memahami bilangan bulat secara konsep & aplikasi
     """)
 
 # ======================
-# 2. PENGANTAR MATERI
+# 2. MATERI INTERAKTIF
 # ======================
-elif menu == "Pengantar Materi":
-    st.title("📖 Pengantar Bilangan Bulat")
+elif menu == "Materi Interaktif":
+    st.title("📖 Materi Interaktif")
 
-    st.subheader("1. Garis Bilangan")
-    x = st.slider("Pilih bilangan", -10, 10, 0)
-    st.pyplot(garis_bilangan(x))
-    st.write(f"Jarak dari nol: {abs(x)}")
+    tab1, tab2, tab3 = st.tabs(["Garis Bilangan", "Invers", "Perbandingan"])
 
-    st.subheader("2. Invers Bilangan")
-    inv = -x
-    st.write(f"Invers dari {x} adalah {inv}")
-    st.write(f"{x} + ({inv}) = 0")
+    with tab1:
+        st.subheader("Garis Bilangan")
+        x = st.slider("Pilih bilangan", -10, 10, 0)
+        st.pyplot(garis_bilangan(x))
+        st.write(f"Jarak dari nol: {abs(x)}")
 
-    st.subheader("3. Perbandingan")
-    data = st.text_input("Masukkan bilangan (pisahkan koma)", "-3,5,0,-1")
-    try:
-        angka = list(map(int, data.split(",")))
-        st.write("Urutan naik:", sorted(angka))
-    except:
-        st.warning("Input belum valid")
+    with tab2:
+        st.subheader("Invers")
+        inv = -x
+        st.write(f"Invers dari {x} adalah {inv}")
+        st.write(f"{x} + ({inv}) = 0")
+
+    with tab3:
+        st.subheader("Perbandingan")
+        data = st.text_input("Masukkan bilangan", "-3,5,0,-1")
+        try:
+            angka = list(map(int, data.split(",")))
+            st.write("Urutan:", sorted(angka))
+        except:
+            st.warning("Input salah")
 
 # ======================
 # 3. KALKULATOR
 # ======================
 elif menu == "Kalkulator":
-    st.title("🧮 Kalkulator Bilangan Bulat")
+    st.title("🧮 Kalkulator Interaktif")
 
     a = st.number_input("Bilangan pertama", step=1)
     b = st.number_input("Bilangan kedua", step=1)
 
-    operasi = st.selectbox("Operasi", ["+", "-", "×", "÷"])
+    op = st.selectbox("Operasi", ["+", "-", "×", "÷"])
 
     if st.button("Hitung"):
-        if operasi == "+":
+        if op == "+":
             hasil = a + b
             st.success(f"{a} + {b} = {hasil}")
-            st.pyplot(garis_bilangan(int(a + b)))
+            st.pyplot(garis_bilangan(int(hasil)))
 
-        elif operasi == "-":
+        elif op == "-":
             hasil = a - b
             st.success(f"{a} - {b} = {hasil}")
 
-        elif operasi == "×":
+        elif op == "×":
             hasil = a * b
             st.success(f"{a} × {b} = {hasil}")
 
-        elif operasi == "÷":
+        elif op == "÷":
             if b != 0:
                 hasil = a / b
                 st.success(f"{a} ÷ {b} = {hasil}")
             else:
                 st.error("Tidak bisa dibagi nol")
 
-    st.subheader("Faktor Bilangan")
-    x = st.number_input("Cari faktor dari", min_value=1, value=6)
+    st.subheader("Faktor")
+    x = st.number_input("Cari faktor", min_value=1, value=6)
     faktor = [i for i in range(1, x+1) if x % i == 0]
     st.write(faktor)
 
 # ======================
-# 4. KUIS
+# 4. KUIS SESUAI TP
 # ======================
-elif menu == "Kuis":
-    st.title("📝 Kuis")
+elif menu == "Kuis TP":
+    st.title("📝 Kuis Berdasarkan Tujuan Pembelajaran")
 
-    if "soal" not in st.session_state:
-        st.session_state.soal = (random.randint(-10,10), random.randint(-10,10))
+    if "score" not in st.session_state:
+        st.session_state.score = 0
+        st.session_state.q = 0
 
-    a, b = st.session_state.soal
+    soal_list = [
+        ("TP1: Posisi -3 dari nol?", "-3"),
+        ("TP2: Invers dari 5?", "-5"),
+        ("TP3: Mana lebih besar: -2 atau 3?", "3"),
+        ("TP4: 4 + (-4) = ?", "0"),
+        ("TP5: -3 + 5 = ?", "2"),
+        ("TP6: Faktor dari 6?", "1,2,3,6"),
+        ("TP7: Suhu -2 naik 5 = ?", "3")
+    ]
 
-    st.write(f"Berapakah {a} + {b}?")
+    if st.session_state.q < len(soal_list):
+        soal, benar = soal_list[st.session_state.q]
 
-    jawaban = st.number_input("Jawaban", step=1)
+        st.write(soal)
+        jawab = st.text_input("Jawaban")
 
-    if st.button("Cek Jawaban"):
-        if jawaban == a + b:
-            st.success("Benar!")
-        else:
-            st.error(f"Salah, jawabannya {a+b}")
+        if st.button("Submit"):
+            if jawab.strip() == benar:
+                st.success("Benar!")
+                st.session_state.score += 1
+            else:
+                st.error(f"Salah. Jawaban: {benar}")
 
-    if st.button("Soal Baru"):
-        st.session_state.soal = (random.randint(-10,10), random.randint(-10,10))
-        st.rerun()
+            st.session_state.q += 1
+            st.rerun()
 
-    st.subheader("Soal Kontekstual")
-    st.write("Suhu -2°C naik 5°C, berapa sekarang?")
-
-    jawab2 = st.number_input("Jawaban soal kontekstual", step=1)
-
-    if st.button("Cek Kontekstual"):
-        if jawab2 == 3:
-            st.success("Benar!")
-        else:
-            st.error("Jawaban: 3°C")
+    else:
+        st.success(f"Skor akhir: {st.session_state.score}/7")
+        if st.button("Ulangi"):
+            st.session_state.score = 0
+            st.session_state.q = 0
+            st.rerun()
