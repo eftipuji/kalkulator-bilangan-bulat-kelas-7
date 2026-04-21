@@ -6,11 +6,11 @@ import time
 st.set_page_config(page_title="Jelajah Bilangan Bulat", layout="wide")
 
 # ======================
-# DASHBOARD HEADER
+# DASHBOARD
 # ======================
 st.title("🧭 JELAJAH BILANGAN BULAT")
 
-st.image("/mnt/data/Hand Drawn Vector Cartoon Math Concept Background, Hand Painted, Vector, Cartoon Background Image And Wallpaper for Free Download.jpg", use_container_width=True)
+st.image("assets/gambar.jpg", use_container_width=True)
 
 # ======================
 # GARIS BILANGAN
@@ -30,7 +30,7 @@ def garis_bilangan(x):
     return fig
 
 # ======================
-# SIDEBAR MENU
+# SIDEBAR
 # ======================
 menu = st.sidebar.radio(
     "📚 Menu",
@@ -38,7 +38,7 @@ menu = st.sidebar.radio(
 )
 
 # ======================
-# 1. PANDUAN
+# PANDUAN
 # ======================
 if menu == "Panduan":
     st.header("📘 Panduan")
@@ -49,10 +49,10 @@ if menu == "Panduan":
     """)
 
 # ======================
-# 2. MATERI
+# MATERI
 # ======================
 elif menu == "Materi":
-    st.header("📖 Materi")
+    st.header("📖 Materi Bilangan Bulat")
 
     x = st.slider("Pilih bilangan", -10, 10, 0)
     st.pyplot(garis_bilangan(x))
@@ -67,10 +67,10 @@ elif menu == "Materi":
         angka = list(map(int, data.split(",")))
         st.write("Urutan:", sorted(angka))
     except:
-        st.warning("Input salah")
+        st.warning("Input tidak valid")
 
 # ======================
-# 3. KALKULATOR
+# KALKULATOR
 # ======================
 elif menu == "Kalkulator":
     st.header("🧮 Kalkulator")
@@ -101,8 +101,13 @@ elif menu == "Kalkulator":
             else:
                 st.error("Tidak bisa dibagi nol")
 
+    st.subheader("Faktor")
+    x = st.number_input("Cari faktor", min_value=1, value=6)
+    faktor = [i for i in range(1, x+1) if x % i == 0]
+    st.write(faktor)
+
 # ======================
-# 4. KUIS GAME + REFLEKSI
+# KUIS GAME + REFLEKSI
 # ======================
 elif menu == "Kuis Game":
     st.header("🎮 Kuis Interaktif")
@@ -110,18 +115,18 @@ elif menu == "Kuis Game":
     if "score" not in st.session_state:
         st.session_state.score = 0
         st.session_state.index = 0
-        st.session_state.total = 5
+        st.session_state.total = 7
         st.session_state.soal = []
         st.session_state.salah = []
 
     # BANK SOAL + PENJELASAN
     def generate_question():
-        tipe = random.choice(["operasi", "invers", "banding", "konteks"])
+        tipe = random.choice(["operasi", "invers", "banding", "faktor", "konteks"])
 
         if tipe == "operasi":
             a, b = random.randint(-10,10), random.randint(-10,10)
             return (f"{a} + {b} = ?", str(a+b),
-                    f"Gunakan konsep penjumlahan bilangan bulat: {a} + {b} = {a+b}")
+                    f"{a} + {b} = {a+b} (gunakan penjumlahan bilangan bulat)")
 
         elif tipe == "invers":
             x = random.randint(-10,10)
@@ -130,9 +135,14 @@ elif menu == "Kuis Game":
 
         elif tipe == "banding":
             a, b = random.randint(-10,10), random.randint(-10,10)
-            benar = str(max(a,b))
-            return (f"Mana lebih besar: {a} atau {b}?", benar,
+            return (f"Mana lebih besar: {a} atau {b}?", str(max(a,b)),
                     "Bilangan yang lebih ke kanan pada garis bilangan lebih besar")
+
+        elif tipe == "faktor":
+            x = random.choice([6,8,10])
+            faktor = ",".join(map(str,[i for i in range(1,x+1) if x%i==0]))
+            return (f"Faktor dari {x}?", faktor,
+                    f"Faktor {x} adalah bilangan yang membagi habis {x}")
 
         elif tipe == "konteks":
             return ("Suhu -2 naik 5, hasilnya?", "3",
@@ -145,6 +155,7 @@ elif menu == "Kuis Game":
     # PROGRESS
     st.progress(st.session_state.index / st.session_state.total)
 
+    # TAMPILKAN SOAL
     if st.session_state.index < st.session_state.total:
 
         soal, benar, penjelasan = st.session_state.soal[st.session_state.index]
@@ -168,13 +179,11 @@ elif menu == "Kuis Game":
             st.session_state.index += 1
             st.rerun()
 
+    # HASIL + REFLEKSI
     else:
         st.balloons()
         st.success(f"🎉 Skor: {st.session_state.score}/{st.session_state.total}")
 
-        # ======================
-        # REFLEKSI
-        # ======================
         st.subheader("📊 Refleksi Pembelajaran")
 
         if st.session_state.salah:
@@ -183,9 +192,9 @@ elif menu == "Kuis Game":
                 st.write(f"Jawaban benar: {s[1]}")
                 st.info(f"Penjelasan: {s[2]}")
         else:
-            st.success("Semua jawaban benar, pemahaman sangat baik!")
+            st.success("Semua benar! Pemahaman sangat baik!")
 
-        if st.button("Ulangi"):
+        if st.button("Ulangi Kuis"):
             st.session_state.score = 0
             st.session_state.index = 0
             st.session_state.soal = []
